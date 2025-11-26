@@ -334,6 +334,14 @@ def select_image_callback(sender, app_data):
         print("Formato de imagem não suportado.")
         return
 
+    # Pega as dimensões da textura existente
+    config = dpg.get_item_configuration("opencv_image")
+    texture_width = config["width"]
+    texture_height = config["height"]
+    
+    # Redimensiona a imagem para caber na textura existente
+    cv_image = cv.resize(cv_image, (texture_width, texture_height), interpolation=cv.INTER_AREA)
+    
     height, width, channels = cv_image.shape
     image_data = cv_image.flatten() / 255.0
 
@@ -348,7 +356,7 @@ def opencv_image_click_callback(sender, app_data, user_data):
     update_texture()
 
 # Carrega a imagem inicial
-image_path = "res/colored_pencils_colour_pencils.jpg"
+image_path = "res/imagem2.jpg"
 #image_path = "res/civilization_8rcz.jpg"
 cv_original_image = cv.imread(image_path)
 cv_image = cv_original_image.copy()
