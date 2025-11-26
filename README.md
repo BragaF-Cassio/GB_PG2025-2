@@ -34,6 +34,10 @@ O software permite carregar imagens ou usar a câmera em tempo real, aplicar efe
 - Ajuste de Saturação  
 - Filtro Laplaciano  
 - Adicionar **stickers** na posição clicada com o mouse;
+- Operações matemáticas
+  - Adição
+  - Subtração Ponderada
+  - Blending
 
 ### Salvamento
 - Salva a imagem final (com todos os efeitos aplicados) como `output_image.png`.
