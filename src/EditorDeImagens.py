@@ -282,7 +282,7 @@ def process_effects(image, effects_list):
 
             elif effect.effect_type == Effects.SUBTRACT_IMAGES:
                 if value:  # checkbox marcado
-                    image = cv.subtract(image, second)
+                    image = cv.addWeighted(image, 1, second, -0.5, 0)
 
             elif effect.effect_type == Effects.BLEND_IMAGES:
                 # value vem do slider (0 a 100)
