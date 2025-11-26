@@ -435,9 +435,7 @@ image_data = cv_image.flatten() / 255.0  # Normalização para [0.0, 1.0]
 
 # Configura a captura de vídeo (câmera)
 capture = cv.VideoCapture(0)
-if not capture.isOpened():
-    print("Cannot open camera or video file")
-    exit()
+
 # Define dimensões de captura da câmera
 capture.set(cv.CAP_PROP_FRAME_WIDTH, width_cam)
 capture.set(cv.CAP_PROP_FRAME_HEIGHT, height_cam)
@@ -466,7 +464,11 @@ with dpg.texture_registry(show=False):
 
 # Cria a janela de efeitos
 with dpg.window(label="Configurações",no_close=True,no_resize=True,no_collapse=True, width=effects_window_width, height=effects_window_height, no_move=True, pos=(0, 0), tag="effects_window"):
-    dpg.add_combo(label="Modo de Software", items=["Imagem", "Câmera"], default_value=("Câmera" if software_mode == "camera" else "Imagem"), tag="image_camera_selector")
+    if not capture.isOpened():
+        print("Cannot open camera or video file")
+        dpg.add_combo(label="Modo de Software", items=["Imagem"], default_value=("Imagem"), tag="image_camera_selector")
+    else:
+        dpg.add_combo(label="Modo de Software", items=["Imagem", "Câmera"], default_value=("Câmera" if software_mode == "camera" else "Imagem"), tag="image_camera_selector")
     with dpg.group(horizontal=True):
         dpg.add_button(label="Salvar Imagem", callback=save_image_callback)
         dpg.add_button(label="Selecionar Imagem", callback=lambda: dpg.show_item("file_dialog_id"))
