@@ -421,7 +421,7 @@ def opencv_image_click_callback(sender, app_data, user_data):
     update_texture()
 
 # Carrega a imagem inicial
-image_path = "res/imagem2.jpg"
+image_path = "res/imagem1.jpg"
 #image_path = "res/civilization_8rcz.jpg"
 cv_original_image = cv.imread(image_path)
 cv_image = cv_original_image.copy()
