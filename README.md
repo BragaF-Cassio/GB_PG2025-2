@@ -1,8 +1,8 @@
-# Processamento Gráfico: Fundamentos - Grau B, 2025/2, Unisinos
+# 🤖 Processamento Gráfico: Fundamentos - Grau B, 2025/2, Unisinos
 > Este programa foi desenvolvido como parte da disciplina *Processamento Gráfico* com foco na exploração e aplicação de técnicas de processamento de imagem. O projeto teve como objetivo desenvolver um protótipo de um aplicativo de edição de imagens e vídeo (inspirado nos stories do Instagram).
 
 
-## Editor de Imagens em Python (OpenCV + Dear PyGui)
+## 🖥️🎨 Editor de Imagens em Python (OpenCV + Dear PyGui)
 
 - 👥 **Integrantes:**  
   - Cássio F. Braga  
