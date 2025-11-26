@@ -50,14 +50,14 @@ O software permite carregar imagens ou usar a câmera em tempo real, aplicar efe
 ```plaintext
 📂 GB_PG2025-2/
 ├── 📂 res/
-│   └── 📂 stickers/
-│       └── chocado.png
-│       └── tubarao.png
-│       └── gato.png
+│   ├── 📂 stickers/
+│   │   ├── chocado.png
+│   │   ├── tubarao.png
+│   │   └── gato.png
 │   └── colored_pencils_colour_pencils.jpg
 ├── 📂 src/      
 │   └── EditorDeImagens.py
-├── 📄 README.md
+└── 📄 README.md
 ```
 A pasta `res/stickers/` deve conter os arquivos PNG dos stickers utilizados no efeito “Sticker”.
 
