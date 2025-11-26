@@ -58,7 +58,8 @@ O software permite carregar imagens ou usar a câmera em tempo real, aplicar efe
 │   │   ├── chocado.png
 │   │   ├── tubarao.png
 │   │   └── gato.png
-│   └── colored_pencils_colour_pencils.jpg
+│   ├── imagem1.jpg
+│   └── imagem2.jpg
 ├── 📂 src/      
 │   └── EditorDeImagens.py
 └── 📄 README.md
