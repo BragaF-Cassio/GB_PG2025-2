@@ -126,7 +126,7 @@ def add_effect_callback():
         print("Adiciona filtro de brilho. O valor do slider define o nível de brilho aplicado à imagem.")
 
     elif effect_index == Effects.CONTRAST:
-        add_effect_slider(effect, effect_index, 0, 255, 0)
+        add_effect_slider(effect, effect_index, -100, 400, 0)
         print("Adiciona filtro de contraste. O valor do slider define o nível de contraste aplicado à imagem.")
 
     elif effect_index == Effects.SATURATION:
@@ -165,11 +165,11 @@ def process_effects(image, effects_list):
             channel = value
             zeros = np.zeros(image.shape[:2], dtype="uint8")
             if channel == "B":
-                image = cv.merge([zeros, zeros, image[:,:,0], image[:,:,3]])
+                image = cv.merge([zeros, zeros, image[:,:,2], image[:,:,3]])
             elif channel == "G":
                 image = cv.merge([zeros, image[:,:,1], zeros, image[:,:,3]])
             elif channel == "R":
-                image = cv.merge([image[:,:,2], zeros, zeros, image[:,:,3]])
+                image = cv.merge([image[:,:,0], zeros, zeros, image[:,:,3]])
 
         elif effect.effect_type == Effects.SHARPEN:
             if value:
@@ -197,9 +197,8 @@ def process_effects(image, effects_list):
         elif effect.effect_type == Effects.CONTRAST:
             contrast = int(value)
             if contrast != 0:
-                f = 131 * (contrast + 127) / (127 * (131 - contrast))
-                alpha_c = f
-                gamma_c = 127*(1 - f)
+                alpha_c = contrast/100 +1
+                gamma_c = -contrast
                 image = cv.addWeighted(image, alpha_c, image, 0, gamma_c)
 
         elif effect.effect_type == Effects.SATURATION:
