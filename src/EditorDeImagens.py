@@ -24,6 +24,7 @@ height_cam = 480
 software_mode = "image"  # "image" ou "camera"
 height, width, channels = 0, 0, 0
 cv_image = None
+cv_second_image = None
 image_data = None
 mouse_pos = (0, 0)
 
@@ -35,8 +36,8 @@ stickers_files = [f for f in os.listdir(stickers_folder) if os.path.isfile(os.pa
 effects_array = []
 
 # Listas de nomes e tags dos efeitos
-effects_list_names = ["Blur Gaussiano", "Escala de Cinza", "Detecção de Bordas", "Canal de Cor", "Sharpen", "Inverter Cores", "Brilho", "Contraste", "Saturação", "Laplaciano", "Sticker"]
-effects_tags_names = ["blur_slider", "gray_scale_checkbox", "edge_detection_checkbox", "color_channel_selector", "sharpen_checkbox", "invert_colors_checkbox", "brightness_slider", "contrast_slider", "saturation_slider", "laplacian_checkbox", "sticker_selector"]
+effects_list_names = ["Blur Gaussiano", "Escala de Cinza", "Detecção de Bordas", "Canal de Cor", "Sharpen", "Inverter Cores", "Brilho", "Contraste", "Saturação", "Laplaciano", "Sticker", "Adição de Imagens", "Subtração de Imagens", "Blending de Imagens"]
+effects_tags_names = ["blur_slider", "gray_scale_checkbox", "edge_detection_checkbox", "color_channel_selector", "sharpen_checkbox", "invert_colors_checkbox", "brightness_slider", "contrast_slider", "saturation_slider", "laplacian_checkbox", "sticker_selector", "add_images_checkbox", "subtract_images_checkbox", "blend_images_slider"]
 # Enum para os tipos de efeitos
 class Effects(IntEnum):
     BLUR = 0
@@ -50,6 +51,9 @@ class Effects(IntEnum):
     SATURATION = 8
     LAPLACIAN = 9
     STICKER = 10
+    ADD_IMAGES = 11
+    SUBTRACT_IMAGES = 12
+    BLEND_IMAGES = 13
 
 # Classe para representar um efeito aplicado
 class Efeitos():
@@ -140,6 +144,19 @@ def add_effect_callback():
     elif effect_index == Effects.STICKER:
         add_effect_combo(effect, effect_index, stickers_files)
         print("Adiciona sticker à imagem. Seleciona um sticker para sobrepor na imagem.")
+    
+    elif effect_index == Effects.ADD_IMAGES:
+        add_effect_checkbox(effect, effect_index)
+        print("Adição de Imagens. soma pixel a pixel da imagem principal com a 2ª imagem.")
+
+    elif effect_index == Effects.SUBTRACT_IMAGES:
+        add_effect_checkbox(effect, effect_index)
+        print("Subtração de Imagens. subtrai pixel a pixel a 2ª imagem da imagem principal.")
+
+    elif effect_index == Effects.BLEND_IMAGES:
+        # slider de 0 a 100 para alpha
+        add_effect_slider(effect, effect_index, 0, 100, 50)
+        print("Blending de Imagens. combinação ponderada entre as duas imagens (alpha controlado pelo slider).")
 
 # Função para processar os efeitos na imagem
 def process_effects(image, effects_list):
@@ -249,6 +266,29 @@ def process_effects(image, effects_list):
                     roi[:, :, 3] = 255  # Definir alfa como opaco
                     image[y:y+sticker_height, x:x+sticker_width] = roi
 
+        elif effect.effect_type in (Effects.ADD_IMAGES, Effects.SUBTRACT_IMAGES, Effects.BLEND_IMAGES):
+            global cv_second_image
+            if cv_second_image is None:
+                # sem segunda imagem, não faz nada
+                continue
+
+            # Garante que a segunda imagem tem o mesmo tamanho da atual
+            h, w = image.shape[:2]
+            second = cv.resize(cv_second_image, (w, h), interpolation=cv.INTER_AREA)
+
+            if effect.effect_type == Effects.ADD_IMAGES:
+                if value:  # checkbox marcado
+                    image = cv.add(image, second)
+
+            elif effect.effect_type == Effects.SUBTRACT_IMAGES:
+                if value:  # checkbox marcado
+                    image = cv.addWeighted(image, 1, second, -0.5, 0)
+
+            elif effect.effect_type == Effects.BLEND_IMAGES:
+                # value vem do slider (0 a 100)
+                alpha = float(value) / 100.0
+                beta = 1.0 - alpha
+                image = cv.addWeighted(image, alpha, second, beta, 0)
     return image
 
 # Callback para mudar o modo entre imagem e câmera
@@ -314,7 +354,7 @@ def save_image_callback():
         image_to_save = (np.array(data_img).reshape((height, width, 4)) * 255).astype(np.uint8)
         cv.imwrite("output_image.png", cv.cvtColor(image_to_save, cv.COLOR_RGBA2BGR))
 
-# Callback para selecionar uma imagem do sistema de arquivos
+# Callback para selecionar a primeira imagem do sistema de arquivos
 def select_image_callback(sender, app_data):
     global image_path, cv_original_image, cv_image, height, width, channels, image_data
     image_path = app_data['file_path_name']
@@ -349,6 +389,31 @@ def select_image_callback(sender, app_data):
     dpg.configure_item("opencv_image_display", width=width, height=height)
     dpg.configure_item("opencv_image", width=width, height=height)
     update_texture()
+
+# Callback para selecionar a segunda imagem do sistema de arquivos
+def select_second_image_callback(sender, app_data):
+    global cv_second_image
+
+    second_path = app_data['file_path_name']
+    img = cv.imread(second_path, cv.IMREAD_UNCHANGED)
+
+    if img is None:
+        print("Não foi possível carregar a 2ª imagem.")
+        return
+
+    # Normaliza pra RGBA, igual a tua imagem principal
+    if len(img.shape) == 2:
+        img = cv.cvtColor(img, cv.COLOR_GRAY2RGBA)
+    elif img.shape[2] == 3:
+        img = cv.cvtColor(img, cv.COLOR_BGR2RGBA)
+    elif img.shape[2] == 4:
+        img = cv.cvtColor(img, cv.COLOR_BGRA2RGBA)
+    else:
+        print("Formato da 2ª imagem não suportado.")
+        return
+
+    cv_second_image = img
+    print("2ª imagem carregada com sucesso para operações aritméticas.")
 
 def opencv_image_click_callback(sender, app_data, user_data):
     global mouse_pos
@@ -386,9 +451,13 @@ dpg.setup_dearpygui()
 with dpg.item_handler_registry(tag="opencv_image_handler"):
     dpg.add_item_clicked_handler(callback=opencv_image_click_callback)
 
-# Cria o diálogo de seleção de arquivo
+# Cria o diálogo de seleção de arquivo da primeira imagem
 with dpg.file_dialog(directory_selector=False, show=False, callback=select_image_callback, tag="file_dialog_id", width=400, height=300):
     dpg.add_file_extension(".jpg,.png,.jpeg", color=(150, 255, 150, 255))
+
+# Cria o diálogo de seleção de arquivo da segunda imagem
+with dpg.file_dialog(directory_selector=False, show=False, callback=select_second_image_callback, tag="file_dialog_second_image", width=400, height=300):
+    dpg.add_file_extension(".jpg,.png,.jpeg", color=(150, 200, 255, 255))
 
 # Cria texturas dinâmicas de imagem e vídeo
 with dpg.texture_registry(show=False):
@@ -401,6 +470,7 @@ with dpg.window(label="Configurações",no_close=True,no_resize=True,no_collapse
     with dpg.group(horizontal=True):
         dpg.add_button(label="Salvar Imagem", callback=save_image_callback)
         dpg.add_button(label="Selecionar Imagem", callback=lambda: dpg.show_item("file_dialog_id"))
+        dpg.add_button(label="Selecionar 2ª Imagem", callback=lambda: dpg.show_item("file_dialog_second_image"))
     dpg.add_separator()
     dpg.add_combo(label="Efeito", items=effects_list_names, tag="effect_selector", callback=add_effect_callback)
     dpg.add_separator()
