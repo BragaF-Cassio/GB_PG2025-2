@@ -4,25 +4,25 @@
 
 ## Editor de Imagens em Python (OpenCV + Dear PyGui)
 
-- **Integrantes:**  
+- 👥 **Integrantes:**  
   - Cássio F. Braga  
   - Gabriel C. Walber  
   - Patrícia Nagel  
 
 - **Professora:** Rossana Baptista Queiroz  
 
-## Sobre o projeto
+## 📌 Sobre o projeto
 
 Este repositório contém um **editor de imagens simples** desenvolvido em Python, utilizando **OpenCV** para processamento de imagens e **Dear PyGui** para interface gráfica. 
 O software permite carregar imagens ou usar a câmera em tempo real, aplicar efeitos visuais e salvar o resultado.
 
-## Funcionalidades
+## ✨ Funcionalidades
 
-### Modos de uso
+### 🖼️ Modos de uso
 - **Modo Imagem** – Trabalha com uma imagem carregada do sistema.
 - **Modo Câmera** – Processamento em tempo real usando webcam.
 
-### Efeitos disponíveis
+### 🎨 Efeitos disponíveis
 - Blur Gaussiano  
 - Escala de Cinza  
 - Detecção de Bordas (Canny)  
@@ -39,17 +39,17 @@ O software permite carregar imagens ou usar a câmera em tempo real, aplicar efe
   - Subtração Ponderada
   - Blending
 
-### Salvamento
+### 💾 Salvamento
 - Salva a imagem final (com todos os efeitos aplicados) como `output_image.png`.
 
-## Tecnologias Utilizadas
+## 🧩 Tecnologias Utilizadas
 
 - **Python 3.10+**
 - **OpenCV** (`opencv-python`)
 - **Dear PyGui**
 - **NumPy**
 
-## Estrutura do Repositório
+## 📁 Estrutura do Repositório
 
 ```plaintext
 📂 GB_PG2025-2/
@@ -66,19 +66,19 @@ O software permite carregar imagens ou usar a câmera em tempo real, aplicar efe
 ```
 A pasta `res/stickers/` deve conter os arquivos PNG dos stickers utilizados no efeito “Sticker”.
 
-## Como Executar
+## 🔧 Como Executar
 
-### Instale as dependências:
+### 1️⃣ Instale as dependências:
 ```bash
 pip install opencv-python dearpygui
 ```
 
-### Execute o programa:
+### 2️⃣ Execute o programa:
 ```bash
 python src/EditorDeImagens.py
 ```
 
-## Como Usar 
+## 🕹️ Como Usar 
 
 - Abra o programa e escolha o modo:
    - Imagem
