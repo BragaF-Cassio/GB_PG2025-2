@@ -268,9 +268,9 @@ def process_effects(image, effects_list):
 
         elif effect.effect_type in (Effects.ADD_IMAGES, Effects.SUBTRACT_IMAGES, Effects.BLEND_IMAGES):
             global cv_second_image
+
             if cv_second_image is None:
-                # sem segunda imagem, não faz nada
-                continue
+                cv_second_image = cv.cvtColor(cv.imread("res/imagem2.jpg"), cv.COLOR_BGR2RGBA)
 
             # Garante que a segunda imagem tem o mesmo tamanho da atual
             h, w = image.shape[:2]
@@ -422,7 +422,6 @@ def opencv_image_click_callback(sender, app_data, user_data):
 
 # Carrega a imagem inicial
 image_path = "res/imagem1.jpg"
-#image_path = "res/civilization_8rcz.jpg"
 cv_original_image = cv.imread(image_path)
 cv_image = cv_original_image.copy()
 cv_image = cv.cvtColor(cv_image, cv.COLOR_BGR2RGBA)  # Converte BGR para RGBA
