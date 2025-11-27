@@ -268,9 +268,9 @@ def process_effects(image, effects_list):
 
         elif effect.effect_type in (Effects.ADD_IMAGES, Effects.SUBTRACT_IMAGES, Effects.BLEND_IMAGES):
             global cv_second_image
+
             if cv_second_image is None:
-                # sem segunda imagem, não faz nada
-                continue
+                cv_second_image = cv.cvtColor(cv.imread("res/imagem2.jpg"), cv.COLOR_BGR2RGBA)
 
             # Garante que a segunda imagem tem o mesmo tamanho da atual
             h, w = image.shape[:2]
@@ -421,8 +421,7 @@ def opencv_image_click_callback(sender, app_data, user_data):
     update_texture()
 
 # Carrega a imagem inicial
-image_path = "res/imagem2.jpg"
-#image_path = "res/civilization_8rcz.jpg"
+image_path = "res/imagem1.jpg"
 cv_original_image = cv.imread(image_path)
 cv_image = cv_original_image.copy()
 cv_image = cv.cvtColor(cv_image, cv.COLOR_BGR2RGBA)  # Converte BGR para RGBA
@@ -435,9 +434,7 @@ image_data = cv_image.flatten() / 255.0  # Normalização para [0.0, 1.0]
 
 # Configura a captura de vídeo (câmera)
 capture = cv.VideoCapture(0)
-if not capture.isOpened():
-    print("Cannot open camera or video file")
-    exit()
+
 # Define dimensões de captura da câmera
 capture.set(cv.CAP_PROP_FRAME_WIDTH, width_cam)
 capture.set(cv.CAP_PROP_FRAME_HEIGHT, height_cam)
@@ -466,7 +463,11 @@ with dpg.texture_registry(show=False):
 
 # Cria a janela de efeitos
 with dpg.window(label="Configurações",no_close=True,no_resize=True,no_collapse=True, width=effects_window_width, height=effects_window_height, no_move=True, pos=(0, 0), tag="effects_window"):
-    dpg.add_combo(label="Modo de Software", items=["Imagem", "Câmera"], default_value=("Câmera" if software_mode == "camera" else "Imagem"), tag="image_camera_selector")
+    if not capture.isOpened():
+        print("Cannot open camera or video file")
+        dpg.add_combo(label="Modo de Software", items=["Imagem"], default_value=("Imagem"), tag="image_camera_selector")
+    else:
+        dpg.add_combo(label="Modo de Software", items=["Imagem", "Câmera"], default_value=("Câmera" if software_mode == "camera" else "Imagem"), tag="image_camera_selector")
     with dpg.group(horizontal=True):
         dpg.add_button(label="Salvar Imagem", callback=save_image_callback)
         dpg.add_button(label="Selecionar Imagem", callback=lambda: dpg.show_item("file_dialog_id"))
