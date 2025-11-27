@@ -150,7 +150,7 @@ def add_effect_callback():
         print("Adição de Imagens. soma pixel a pixel da imagem principal com a 2ª imagem.")
 
     elif effect_index == Effects.SUBTRACT_IMAGES:
-        add_effect_checkbox(effect, effect_index)
+        add_effect_slider(effect, effect_index, 0, 100, 0)
         print("Subtração de Imagens. subtrai pixel a pixel a 2ª imagem da imagem principal.")
 
     elif effect_index == Effects.BLEND_IMAGES:
@@ -281,8 +281,9 @@ def process_effects(image, effects_list):
                     image = cv.add(image, second)
 
             elif effect.effect_type == Effects.SUBTRACT_IMAGES:
-                if value:  # checkbox marcado
-                    image = cv.addWeighted(image, 1, second, -0.5, 0)
+                # value vem do slider (0 a 100)
+                beta = -float(value) / 100.0
+                image = cv.addWeighted(image, 1, second, beta, 0)
 
             elif effect.effect_type == Effects.BLEND_IMAGES:
                 # value vem do slider (0 a 100)
